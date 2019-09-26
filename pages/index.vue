@@ -11,8 +11,8 @@
         </v-card-title>
         <v-card-text>
           <p>Just give me whatever the tester spit out.</p>
-          <FileUploader @load="rawText = $event" />
-          <FileParser v-if="textLoaded" :rawText="rawText" />
+          <FileUploader />
+          <OutputSettings v-if="loaded" />
         </v-card-text>
       </v-card>
     </v-flex>
@@ -20,20 +20,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import FileUploader from '~/components/FileUploader'
-import FileParser from '~/components/FileParser'
+import OutputSettings from '~/components/OutputSettings'
 
 export default {
   components: {
     FileUploader,
-    FileParser
+    OutputSettings
   },
 
-  data: () => ({ rawText: '' }),
-  computed: {
-    textLoaded() {
-      return this.rawText !== ''
-    }
-  }
+  computed: mapState(['loaded'])
 }
 </script>

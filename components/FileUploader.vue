@@ -1,17 +1,23 @@
 <template>
-  <!-- <input type="file" @change="loadText" /> -->
-  <v-file-input @change="loadText" />
+  <v-file-input @change="handleInput" />
 </template>
 
 <script>
+import { mapState, mapMutations, mapActions } from 'vuex'
+
 export default {
   methods: {
-    loadText(file) {
-      const reader = new FileReader()
+    handleInput(file) {
+      if (file) {
+        this.loadFile(file)
+      } else {
+        this.unloadFile()
+      }
+    },
+    ...mapMutations(['unloadText']),
+    ...mapActions(['loadFile'])
+  },
 
-      reader.onload = (e) => this.$emit('load', e.target.result)
-      reader.readAsText(file)
-    }
-  }
+  computed: mapState(['loading'])
 }
 </script>
