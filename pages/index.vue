@@ -11,37 +11,28 @@
         </v-card-title>
         <v-card-text>
           <p>Just give me whatever the tester spit out.</p>
-          <!-- <v-file-input v-model="inputFile" /> -->
-          <FileUploader @load="text = $event" />
+          <FileUploader @load="rawText = $event" />
+          <FileParser v-if="textLoaded" :rawText="rawText" />
         </v-card-text>
-        <!-- <v-card-actions>                                           -->
-        <!--   <v-spacer />                                             -->
-        <!--   <v-btn color="orange" @click="loadContents">Next</v-btn> -->
-        <!-- </v-card-actions>                                          -->
       </v-card>
-      {{ text }}
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 import FileUploader from '~/components/FileUploader'
+import FileParser from '~/components/FileParser'
 
 export default {
   components: {
-    FileUploader
+    FileUploader,
+    FileParser
   },
-  data: () => ({ text: '' }),
 
-  computed: {},
-
-  methods: {
-    loadContents(e) {
-      const reader = new FileReader()
-      const file = e.target.files[0]
-
-      reader.onload = (em) => console.log(em.target.result)
-      reader.readAsText(file)
+  data: () => ({ rawText: '' }),
+  computed: {
+    textLoaded() {
+      return this.rawText !== ''
     }
   }
 }
