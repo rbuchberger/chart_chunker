@@ -6,6 +6,7 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default {
+  computed: mapState(['loading']),
   methods: {
     handleInput(file) {
       if (file) {
@@ -16,8 +17,6 @@ export default {
     },
     ...mapMutations(['unloadText']),
     ...mapActions(['loadFile'])
-  },
-
-  computed: mapState(['loading'])
+  }
 }
 </script>

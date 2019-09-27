@@ -17,10 +17,10 @@
     <v-row justify="space-around">
       <v-checkbox
         v-for="(column, index) in columns"
-        v-bind:key="index"
+        :key="index"
+        v-model="handleToggle"
         :value="index"
         :label="column"
-        v-model="handleToggle"
         color="orange"
         class="mx-3"
       />

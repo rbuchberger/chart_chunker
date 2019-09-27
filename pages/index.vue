@@ -13,6 +13,7 @@
           <p>Just give me whatever the tester spit out.</p>
           <FileUploader />
           <OutputSettings v-if="loaded" />
+          <v-btn v-if="loaded" @click="filterColumns">chunkit</v-btn>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -20,7 +21,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import FileUploader from '~/components/FileUploader'
 import OutputSettings from '~/components/OutputSettings'
 
@@ -30,6 +31,8 @@ export default {
     OutputSettings
   },
 
-  computed: mapState(['loaded'])
+  computed: mapState(['loaded']),
+
+  methods: mapGetters(['filterColumns'])
 }
 </script>
