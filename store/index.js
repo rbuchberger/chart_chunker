@@ -1,22 +1,45 @@
-import Papa from 'papaparse'
+import Parser from '~/plugins/parser'
+import Chunker from '~/plugins/chunker'
+
 export const state = () => ({
   loaded: false,
   loading: false,
   rawText: '',
   splitBasis: 8,
-  keptColumns: [12, 14]
+  keptColumns: [12, 14],
+  chunker: false,
+  parser: false
 })
 
 export const mutations = {
+  buildChunker(state) {
+    state.chunker = new Chunker(
+      state.parser.parsedChart,
+      state.splitBasis,
+      state.columns,
+      state.keptColumns
+    )
+  },
+
+  buildParser(state, text) {
+    const parser = new Parser(text)
+    state.parser = parser
+    state.columns = parser.columns
+  },
+
   loadText(state, text) {
     state.rawText = text
     state.loaded = true
     state.loading = false
+    this.commit('buildParser', text)
+    this.commit('buildChunker')
   },
 
   unloadText(state) {
     state.loaded = false
     state.rawText = ''
+    state.parser = false
+    state.chunker = false
   },
 
   setLoading(state) {
@@ -29,10 +52,12 @@ export const mutations = {
 
   setSplitBasis(state, value) {
     state.splitBasis = value
+    this.commit('buildChunker')
   },
 
   setKeptColumns(state, value) {
     state.keptColumns = value
+    this.commit('buildChunker')
   }
 }
 
@@ -46,74 +71,27 @@ export const actions = {
 }
 
 export const getters = {
-  splitText: (state) => state.rawText.split('RESULTS TABLE:'),
-  header: (_state, getters) => getters.splitText[0],
-  columns: (_state, getters) => getters.parsedChart.data[0],
-  rawChart: (_state, getters) => getters.splitText[1],
-
-  parsedChart(_state, getters) {
-    return Papa.parse(getters.rawChart.trim().replace(/\t/g, ''), {})
-  },
-
-  columnItems(_state, getters) {
-    return getters.columns.map((label, index) => ({
-      text: label,
-      value: index
-    }))
-  },
-
-  chunkData(state, getters) {
-    const workingCopy = getters.parsedChart.data.slice(0) // strip the column headers
-    let currentValuePos // Whether the current value is positive
-    let lastValuePos // Whether the last value was positive
-    let currentValue // Value of current split test subject
-    let currentCycle = [] // Collection of all rows from current test cycle
-    const allCycles = [] // Array of all cycles, each of which is an array of rows
-
-    while (workingCopy.length > 0) {
-      const element = workingCopy.shift()
-      currentValue = element[state.splitBasis]
-
-      if (!Math.abs(currentValue) < 0.00001) {
-        currentValuePos = currentValue > 0
-
-        if (currentValuePos === lastValuePos) {
-          currentCycle.push(element)
-        } else {
-          lastValuePos = currentValuePos
-          allCycles.push(currentCycle)
-          currentCycle = []
-          lastValuePos = currentValuePos
-        }
-      }
+  cycles: (state, _getters) => {
+    if (state.chunker) {
+      return state.chunker.cycles
+    } else {
+      return []
     }
-
-    return allCycles
   },
 
-  filterColumns(state, getters) {
-    const chunked = getters.chunkData // array of cycles
-    const filteredCycles = []
-    let filteredCycle = []
-    let unFilteredCycle
-    let unFilteredLine
-
-    while (chunked.length > 0) {
-      unFilteredCycle = chunked.shift() // array of lines
-
-      while (unFilteredCycle.length > 0) {
-        unFilteredLine = unFilteredCycle.shift() // individual line
-        filteredCycle.push(
-          unFilteredLine.filter((_element, index) =>
-            state.keptColumns.includes(index)
-          )
-        )
-      }
-
-      filteredCycles.push(filteredCycle)
-      filteredCycle = []
+  columnItems: (state, _getters) => {
+    if (state.parser) {
+      return state.parser.columnItems
+    } else {
+      return []
     }
+  },
 
-    console.table(filteredCycles)
+  columns: (state, _getters) => {
+    if (state.parser) {
+      return state.parser.columns
+    } else {
+      return []
+    }
   }
 }

@@ -11,8 +11,6 @@
       @change="setSplitBasis"
     />
 
-    {{ splitBasis }}
-
     <h2 class="my-3">Select columns to keep:</h2>
     <v-row justify="space-around">
       <v-checkbox
@@ -25,8 +23,6 @@
         class="mx-3"
       />
     </v-row>
-
-    {{ keptColumns }}
   </div>
 </template>
 

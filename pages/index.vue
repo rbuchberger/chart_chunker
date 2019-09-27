@@ -6,14 +6,12 @@
         <p>So you don't have to abuse undergrads</p>
       </header>
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title v-if="!loaded" class="headline">
           First, upload your file.
         </v-card-title>
         <v-card-text>
-          <p>Just give me whatever the tester spit out.</p>
           <FileUploader />
           <OutputSettings v-if="loaded" />
-          <v-btn v-if="loaded" @click="filterColumns">chunkit</v-btn>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -31,8 +29,9 @@ export default {
     OutputSettings
   },
 
-  computed: mapState(['loaded']),
-
-  methods: mapGetters(['filterColumns'])
+  computed: {
+    ...mapState(['loaded']),
+    ...mapGetters(['filteredData'])
+  }
 }
 </script>
