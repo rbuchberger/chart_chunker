@@ -79,6 +79,14 @@ export const getters = {
     }
   },
 
+  cycleCount: (state, _getters) => {
+    if (state.chunker) {
+      return state.chunker.cycleCount
+    } else {
+      return 0
+    }
+  },
+
   columnItems: (state, _getters) => {
     if (state.parser) {
       return state.parser.columnItems
