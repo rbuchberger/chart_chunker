@@ -12,12 +12,15 @@
         </v-card-title>
 
         <v-card-text>
+          <p>
+            Warning: This tool is still under construction. It has no input
+            validation, no error handling, and is mostly untested. Use with
+            caution, and double-check anything it gives you.
+          </p>
           <FileUploader />
           <p v-if="!loaded">
-            Give me a text file, and I look for a line that says "RESULTS
-            TABLE:". Anything below that line, I will parse as CSV. Give me
-            anything unexpected, and I will probably break. Sorry! I'm a work in
-            progress.
+            I will look for a line that says "RESULTS TABLE:", and parse
+            everything below it as CSV.
           </p>
           <OutputSettings v-if="loaded" />
         </v-card-text>

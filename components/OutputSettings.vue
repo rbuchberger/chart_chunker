@@ -10,9 +10,9 @@
       :value="splitBasis"
       @change="setSplitBasis"
     />
-    <p></p>
 
     <h2 class="mt-5">Select columns to keep:</h2>
+    <p>All data will be returned as absolute values.</p>
     <v-row justify="start">
       <v-checkbox
         v-for="(column, index) in columns"
