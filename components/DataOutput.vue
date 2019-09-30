@@ -13,9 +13,9 @@
       />
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="copyCurrent">Copy current</v-btn>
+        <v-btn @click="copyCurrent">Copy this</v-btn>
         <v-btn @click="copyAll">Copy all</v-btn>
-        <!-- <v-btn color="orange">Download all</v-btn> -->
+        <v-btn disabled>Download all</v-btn>
         <v-spacer />
       </v-card-actions>
       <textarea hidden="true" id="select-box" />

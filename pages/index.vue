@@ -2,16 +2,23 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <header class="text-center">
-        <h1>Battery Test Chart Chunker</h1>
+        <h1>Chart Chunker</h1>
+        <p>By <a href="https://robert-buchberger.com">Robert Buchberger</a></p>
       </header>
 
       <v-card>
         <v-card-title v-if="!loaded" class="headline">
-          First, upload your file.
+          Can I have your file?
         </v-card-title>
 
         <v-card-text>
           <FileUploader />
+          <p v-if="!loaded">
+            Give me a text file, and I look for a line that says "RESULTS
+            TABLE:". Anything below that line, I will parse as CSV. Give me
+            anything unexpected, and I will probably break. Sorry! I'm a work in
+            progress.
+          </p>
           <OutputSettings v-if="loaded" />
         </v-card-text>
       </v-card>

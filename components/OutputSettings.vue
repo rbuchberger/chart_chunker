@@ -3,16 +3,17 @@
     <v-select
       :items="columnItems"
       label="Cycle Split Basis"
-      hint="Split the chart into charge and discharge
-    cycles, based on when this value changes from positive to negative. You
-    probably want charge."
+      hint="Split the chart into charge and discharge cycles, based on when this value
+      changes from positive to negative. Lines where this value is very close to
+      zero are discarded."
       persistent-hint
       :value="splitBasis"
       @change="setSplitBasis"
     />
+    <p></p>
 
-    <h2 class="my-3">Select columns to keep:</h2>
-    <v-row justify="space-around">
+    <h2 class="mt-5">Select columns to keep:</h2>
+    <v-row justify="start">
       <v-checkbox
         v-for="(column, index) in columns"
         :key="index"

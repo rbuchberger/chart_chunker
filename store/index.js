@@ -25,6 +25,7 @@ export const mutations = {
     const parser = new Parser(text)
     state.parser = parser
     state.columns = parser.columns
+    this.commit('buildChunker')
   },
 
   loadText(state, text) {
@@ -32,7 +33,6 @@ export const mutations = {
     state.loaded = true
     state.loading = false
     this.commit('buildParser', text)
-    this.commit('buildChunker')
   },
 
   unloadText(state) {
