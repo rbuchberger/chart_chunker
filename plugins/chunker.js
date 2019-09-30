@@ -78,7 +78,7 @@ export default class Chunker {
   }
 
   processLine(line) {
-    return this.filterColumns(line) // .map((val) => Math.abs(val))
+    return this.filterColumns(line).map((val) => Math.abs(val))
   }
 
   // Build headers
