@@ -30,7 +30,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/vue-clipboard2.js'],
   /*
    ** Nuxt.js dev-modules
    */
