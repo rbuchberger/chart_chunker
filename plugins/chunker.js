@@ -1,17 +1,16 @@
 export default class Chunker {
   constructor(parsedChart, splitBasis, columnNames, keptColumns) {
-    console.log('New Chunker')
     this.parsedChart = parsedChart
     this.splitBasis = splitBasis
     this.columnNames = columnNames
     this.keptColumns = keptColumns.sort() // order matters
     this.cycles = []
-    this.buildStats()
     this.buildCycles()
+    this.buildStats()
   }
 
   buildStats() {
-    this.totalCycles = this.cycles.length
+    this.cycleCount = this.cycles.length
   }
 
   buildCycles() {
@@ -58,9 +57,18 @@ export default class Chunker {
     const chargePrefix = splitBasisAvg > 0 ? 'C' : 'D'
     const cycleIndex = this.cycles.length + 1
 
-    return baseTitles.map(
-      (item, index) => chargePrefix + cycleIndex + '_' + item
-    )
+    return baseTitles.map(function(item, index) {
+      if (index === 0) {
+        return (
+          chargePrefix +
+          cycleIndex +
+          `_(${splitBasisAvg.toExponential(1)})_` +
+          item
+        )
+      } else {
+        return chargePrefix + cycleIndex + '_' + item
+      }
+    })
   }
 
   processLine(line) {
