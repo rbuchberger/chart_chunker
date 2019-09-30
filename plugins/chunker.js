@@ -18,23 +18,29 @@ export default class Chunker {
     let lastValuePos = false // Whether the last value was positive
     let currentValue // Value of current split test subject
     let lines = [] // Collection of all rows from current test cycle
-    while (workingCopy.length > 0) {
-      const element = workingCopy.shift()
+
+    workingCopy.forEach((element) => {
       currentValue = element[this.splitBasis]
 
       // Skip over zeros
-      if (Math.abs(currentValue) > 0.00001) {
-        if (currentValue > 0 === lastValuePos) {
-          // If the sign hasn't changed, keep going
-          lines.push(element)
-        } else if (lines.length > 0) {
-          // the sign has changed, and the cycle is complete.
+      if (Math.abs(currentValue) < 0.0000005) {
+        if (lines.length > 0) {
           this.buildCycle(lines)
           lines = []
-          lastValuePos = currentValue > 0
         }
+      } else if (lines.length === 0) {
+        // We're starting a new cycle
+        lastValuePos = currentValue > 0
+        lines.push(element.slice())
+      } else if (currentValue > 0 === lastValuePos) {
+        // If the sign hasn't changed, keep going
+        lines.push(element.slice())
+      } else {
+        // the sign has changed, and the cycle is complete.
+        this.buildCycle(lines)
+        lines = []
       }
-    }
+    })
 
     // catch the last one:
     if (lines.length > 0) {

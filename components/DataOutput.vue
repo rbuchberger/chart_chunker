@@ -15,7 +15,7 @@
         <v-spacer />
         <v-btn @click="copyCurrent">Copy current</v-btn>
         <v-btn @click="copyAll">Copy all</v-btn>
-        <v-btn color="orange">Download all</v-btn>
+        <!-- <v-btn color="orange">Download all</v-btn> -->
         <v-spacer />
       </v-card-actions>
       <textarea hidden="true" id="select-box" />
@@ -45,6 +45,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Papa from 'papaparse'
+import Concatenator from '~/plugins/concatenator'
 
 export default {
   data() {
@@ -67,17 +68,8 @@ export default {
     },
 
     unparsedAll() {
-      const matrix = [[]]
-      this.cycles.forEach((cycle) => {
-        matrix[0].push(...cycle.headers)
-        cycle.data.forEach((line, lineNumber) => {
-          matrix[lineNumber + 1] = matrix[lineNumber + 1] || []
-
-          matrix[lineNumber + 1].push(...line)
-        })
-      })
-
-      return Papa.unparse(matrix)
+      const matrix = new Concatenator(this.cycles, this.headers)
+      return Papa.unparse(matrix.concatenate())
     }
   },
 
@@ -91,6 +83,7 @@ export default {
     },
 
     copyAll() {
+      console.log('copy all called')
       this.$copyText(this.unparsedAll)
     },
 
