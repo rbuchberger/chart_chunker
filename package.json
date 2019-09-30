@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^3.0.0-0",
-    "apexcharts": "^3.8.6",
     "nuxt": "^2.0.0",
     "papaparse": "^5.1.0"
   },

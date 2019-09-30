@@ -5,16 +5,14 @@
     </v-card-title>
     <v-card-text>
       <v-switch label="Preview" v-model="preview" color="orange" />
-      <v-switch label="Preview chart" v-model="preview_graph" color="orange" />
       <div v-if="preview">
         <v-slider
           v-model="selectedCycleIndex"
           :max="cycleCount - 1"
-          color="orange"
+          v-color="orange"
           ticks
         />
-        <Graph :inputData="selectedCycle" />
-        <v-simple-table v-if="!preview_graph" dense light>
+        <v-simple-table dense light>
           <thead>
             <tr>
               <th v-for="header in selectedCycle.headers" :key="header">
@@ -43,7 +41,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Graph from '~/components/Graph'
 
 export default {
   data() {
@@ -53,11 +50,6 @@ export default {
       preview_graph: false
     }
   },
-
-  components: {
-    Graph
-  },
-
   computed: {
     ...mapGetters(['cycles', 'cycleCount']),
 
