@@ -4,26 +4,37 @@
       Preview Cycle # {{ selectedCycleIndex + 1 }} of {{ cycleCount }}
     </v-card-title>
     <v-card-text>
-      <v-slider v-model="selectedCycleIndex" :max="cycleCount - 1" ticks />
-      <v-simple-table dense light>
-        <thead>
-          <tr>
-            <th v-for="header in selectedCycle.headers" :key="header">
-              {{ header }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(line, lineIndex) in selectedCycle.data" :key="lineIndex">
-            <td
-              v-for="(entry, entryIndex) in line"
-              :key="lineIndex.toString() + entryIndex.toString()"
+      <v-switch label="Preview" v-model="preview" color="orange" />
+      <div v-if="preview">
+        <v-slider
+          v-model="selectedCycleIndex"
+          :max="cycleCount - 1"
+          v-color="orange"
+          ticks
+        />
+        <v-simple-table dense light>
+          <thead>
+            <tr>
+              <th v-for="header in selectedCycle.headers" :key="header">
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(line, lineIndex) in selectedCycle.data"
+              :key="lineIndex"
             >
-              {{ entry }}
-            </td>
-          </tr>
-        </tbody>
-      </v-simple-table>
+              <td
+                v-for="(entry, entryIndex) in line"
+                :key="lineIndex.toString() + entryIndex.toString()"
+              >
+                {{ entry }}
+              </td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </div>
     </v-card-text>
   </v-card>
 </template>
@@ -34,7 +45,9 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      selectedCycleIndex: 0
+      selectedCycleIndex: 0,
+      preview: true,
+      preview_graph: false
     }
   },
   computed: {
