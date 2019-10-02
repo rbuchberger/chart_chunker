@@ -25,11 +25,12 @@ export default class Chunker {
       // Skip over zeros
       if (Math.abs(currentValue) < 0.0000005) {
         if (lines.length > 0) {
+          // There was a cycle in progress; finish it and prep a new one.
           this.buildCycle(lines)
           lines = []
         }
       } else if (lines.length === 0) {
-        // We're starting a new cycle
+        // We're starting a new cycle.
         lastValuePos = currentValue > 0
         lines.push(element.slice())
       } else if (currentValue > 0 === lastValuePos) {
@@ -38,7 +39,9 @@ export default class Chunker {
       } else {
         // the sign has changed, and the cycle is complete.
         this.buildCycle(lines)
-        lines = []
+        // Set up the next cycle
+        lastValuePos = currentValue > 0
+        lines = [element.slice()]
       }
     })
 
