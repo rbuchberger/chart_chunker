@@ -83,7 +83,6 @@ export default {
     },
 
     copyAll() {
-      console.log('copy all called')
       this.$copyText(this.unparsedAll)
     },
 
