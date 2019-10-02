@@ -64,12 +64,12 @@ export default {
       const matrix = [this.selectedCycle.headers].concat(
         this.selectedCycle.data
       )
-      return Papa.unparse(matrix)
+      return Papa.unparse(matrix, { delimiter: '\t' })
     },
 
     unparsedAll() {
       const matrix = new Concatenator(this.cycles, this.headers)
-      return Papa.unparse(matrix.concatenate())
+      return Papa.unparse(matrix.concatenate(), { delimiter: '\t' })
     }
   },
 
