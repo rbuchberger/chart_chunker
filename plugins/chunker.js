@@ -1,12 +1,33 @@
+import Papa from 'papaparse'
+import Cycle from '~/plugins/cycle'
+import Concatenator from '~/plugins/concatenator'
+
+// Take in an array of arrays (papa-parsed CSV table). Split it up into cycles.
+//
+// A charge-discharge cycle is determined by the splitBasis (probably current
+// supplied to the battery.) When changes sign, that line is the first in a new
+// half-cycle. If it's ~zero, end any cycle that's in progress and discard that
+// line.
+
 export default class Chunker {
-  constructor(parsedChart, splitBasis, columnNames, keptColumns) {
-    this.parsedChart = parsedChart
-    this.splitBasis = splitBasis
-    this.columnNames = columnNames
-    this.keptColumns = keptColumns.sort() // order matters
+  constructor(parser, splitBasis, keptColumns) {
+    this.splitBasis = splitBasis // Which value to use for splits
+    this.columnNames = parser.columns
+    this.keptColumns = keptColumns.slice().sort() // order matters
+    this.parsedChart = parser.parsedChart // Array of arrays (papa-parsed CSV)
     this.cycles = []
     this.buildCycles()
     this.buildStats()
+  }
+
+  get unparsed() {
+    return Papa.unparse(this.concatenated, {
+      delimiter: '\t'
+    })
+  }
+
+  get concatenated() {
+    return new Concatenator(this.cycles).concatenated
   }
 
   buildStats() {
@@ -14,10 +35,12 @@ export default class Chunker {
   }
 
   buildCycles() {
-    const workingCopy = this.parsedChart.data.slice(0) // strip the column headers
+    // strip the column headers:
+    const workingCopy = this.parsedChart.data
+
     let lastValuePos = false // Whether the last value was positive
     let currentValue // Value of current split test subject
-    let lines = [] // Collection of all rows from current test cycle
+    let lines = [] // Collection of all rows from current half-cycle
 
     workingCopy.forEach((element) => {
       currentValue = element[this.splitBasis]
@@ -26,76 +49,46 @@ export default class Chunker {
       if (Math.abs(currentValue) < 0.0000005) {
         if (lines.length > 0) {
           // There was a cycle in progress; finish it and prep a new one.
-          this.buildCycle(lines)
+          this.addHalfCycle(lines)
           lines = []
         }
       } else if (lines.length === 0) {
         // We're starting a new cycle.
         lastValuePos = currentValue > 0
-        lines.push(element.slice())
+        lines.push(element)
       } else if (currentValue > 0 === lastValuePos) {
         // If the sign hasn't changed, keep going
-        lines.push(element.slice())
+        lines.push(element)
       } else {
         // the sign has changed, and the cycle is complete.
-        this.buildCycle(lines)
+        this.addHalfCycle(lines)
         // Set up the next cycle
         lastValuePos = currentValue > 0
-        lines = [element.slice()]
+        lines = [element]
       }
     })
 
     // catch the last one:
     if (lines.length > 0) {
-      this.buildCycle(lines)
+      this.addHalfCycle(lines)
     }
   }
 
-  buildCycle(lines) {
-    const splitBasisAvg = this.averageSplitBasis(lines)
-
-    this.cycles.push({
-      data: lines.map((line) => this.processLine(line)),
-      headers: this.buildHeaders(splitBasisAvg),
-      splitBasisAvg
-    })
-  }
-
-  buildHeaders(splitBasisAvg) {
-    const baseTitles = this.filterColumns(this.columnNames)
-    const chargePrefix = splitBasisAvg > 0 ? 'C' : 'D'
-    const cycleIndex = this.cycles.length + 1
-
-    return baseTitles.map(function(item, index) {
-      if (index === 0) {
-        return (
-          chargePrefix +
-          cycleIndex +
-          `_(${splitBasisAvg.toExponential(1)})_` +
-          item
+  addHalfCycle(lines) {
+    if (this.halfCycle) {
+      this.cycles.push(
+        new Cycle(
+          [lines, this.halfCycle],
+          this.columnNames,
+          this.splitBasis,
+          this.keptColumns,
+          this.cycles.length + 1
         )
-      } else {
-        return chargePrefix + cycleIndex + '_' + item
-      }
-    })
-  }
+      )
 
-  processLine(line) {
-    return this.filterColumns(line).map((val) => Math.abs(val))
-  }
-
-  // Build headers
-  averageSplitBasis(lines) {
-    const total = lines.reduce(
-      (total, line) => total + parseFloat(line[this.splitBasis]),
-      0
-    )
-
-    return total / lines.length
-  }
-
-  // Dump all columns other than those specified by keptColumns
-  filterColumns(line) {
-    return line.filter((_element, index) => this.keptColumns.includes(index))
+      this.halfCycle = null
+    } else {
+      this.halfCycle = lines
+    }
   }
 }
