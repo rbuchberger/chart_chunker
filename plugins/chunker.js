@@ -78,7 +78,7 @@ export default class Chunker {
     if (this.halfCycle) {
       this.cycles.push(
         new Cycle(
-          [lines, this.halfCycle],
+          [this.halfCycle, lines],
           this.columnNames,
           this.splitBasis,
           this.keptColumns,
