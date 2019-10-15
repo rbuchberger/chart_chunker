@@ -1,5 +1,8 @@
 <template>
   <v-card class="my-5">
+    <v-card-actions>
+      <v-btn nuxt color="grey darken-2" to="/outputSettings">Back</v-btn>
+    </v-card-actions>
     <v-card-title>
       Cycle # {{ selectedCycleIndex + 1 }} of {{ cycleCount }}
     </v-card-title>
@@ -28,7 +31,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(line, lineIndex) in selectedCycle.data" :key="lineIndex">
+          <tr
+            v-for="(line, lineIndex) in selectedCycle.processedLines.slice(1)"
+            :key="lineIndex"
+          >
             <td
               v-for="(entry, entryIndex) in line"
               :key="lineIndex.toString() + entryIndex.toString()"
@@ -43,9 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import Papa from 'papaparse'
-import Concatenator from '~/plugins/concatenator'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -54,6 +58,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['chunker']),
     ...mapGetters(['cycles', 'cycleCount']),
 
     selectedCycle() {
@@ -61,15 +66,11 @@ export default {
     },
 
     unparsedCurrent() {
-      const matrix = [this.selectedCycle.headers].concat(
-        this.selectedCycle.data
-      )
-      return Papa.unparse(matrix, { delimiter: '\t' })
+      return this.selectedCycle.unparsed
     },
 
     unparsedAll() {
-      const matrix = new Concatenator(this.cycles, this.headers)
-      return Papa.unparse(matrix.concatenate(), { delimiter: '\t' })
+      return this.chunker.unparsed
     }
   },
 

@@ -1,51 +1,55 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      <header class="text-center">
-        <h1>Chart Chunker</h1>
-        <p>By <a href="https://robert-buchberger.com">Robert Buchberger</a></p>
-      </header>
+  <v-card>
+    <v-card-title class="headline">
+      Can I have your file?
+    </v-card-title>
+    <v-card-text>
+      <p>
+        I will look for a line that says "RESULTS TABLE:", and parse everything
+        below it as CSV.
+      </p>
 
-      <v-card>
-        <v-card-title v-if="!loaded" class="headline">
-          Can I have your file?
-        </v-card-title>
+      <v-file-input v-model="handleFile" />
 
-        <v-card-text>
-          <p>
-            Warning: This tool is still under construction. It has no input
-            validation, no error handling, and is mostly untested. Use with
-            caution, and double-check anything it gives you.
-          </p>
-          <FileUploader />
-          <p v-if="!loaded">
-            I will look for a line that says "RESULTS TABLE:", and parse
-            everything below it as CSV.
-          </p>
-          <OutputSettings v-if="loaded" />
-        </v-card-text>
-      </v-card>
-
-      <DataOutput v-if="loaded" />
-    </v-flex>
-  </v-layout>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          large
+          color="orange"
+          :disabled="!file"
+          class="px-3"
+          :loading="loading"
+          @click="handleNext"
+        >
+          Go <v-icon class="ml-3">mdi-page-next-outline</v-icon>
+        </v-btn>
+      </v-card-actions>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import FileUploader from '~/components/FileUploader'
-import OutputSettings from '~/components/OutputSettings'
-import DataOutput from '~/components/DataOutput'
+import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default {
-  components: {
-    FileUploader,
-    OutputSettings,
-    DataOutput
+  computed: {
+    ...mapState(['loading', 'file']),
+    handleFile: {
+      get() {
+        return this.file
+      },
+      set(value) {
+        this.setFile(value)
+      }
+    }
   },
 
-  computed: {
-    ...mapState(['loaded'])
+  methods: {
+    handleNext(e) {
+      this.loadFile().then(() => this.$router.push('outputSettings'))
+    },
+    ...mapActions(['loadFile']),
+    ...mapMutations(['setFile'])
   }
 }
 </script>
