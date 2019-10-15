@@ -2,42 +2,20 @@ import Parser from '~/plugins/parser'
 import Chunker from '~/plugins/chunker'
 
 export const state = () => ({
-  loaded: false,
   loading: false,
-  rawText: '',
   splitBasis: 8,
   keptColumns: [12, 14],
   chunker: false,
-  parser: false
+  parser: false,
+  file: null
 })
 
 export const mutations = {
-  buildChunker(state) {
-    state.chunker = new Chunker(
-      state.parser.parsedChart,
-      state.splitBasis,
-      state.columns,
-      state.keptColumns
-    )
-  },
-
-  buildParser(state, text) {
-    const parser = new Parser(text)
-    state.parser = parser
-    state.columns = parser.columns
-    this.commit('buildChunker')
-  },
-
-  loadText(state, text) {
-    state.rawText = text
-    state.loaded = true
-    state.loading = false
-    this.commit('buildParser', text)
+  setChunker(state, chunker) {
+    state.chunker = chunker
   },
 
   unloadText(state) {
-    state.loaded = false
-    state.rawText = ''
     state.parser = false
     state.chunker = false
   },
@@ -52,21 +30,59 @@ export const mutations = {
 
   setSplitBasis(state, value) {
     state.splitBasis = value
-    this.commit('buildChunker')
   },
 
   setKeptColumns(state, value) {
     state.keptColumns = value
-    this.commit('buildChunker')
+  },
+
+  setFile(state, value) {
+    state.file = value
+  },
+
+  unloadFile(state) {
+    state.file = null
+  },
+
+  setParser(state, parser) {
+    state.parser = parser
+    state.columns = parser.columns
   }
 }
 
 export const actions = {
-  loadFile(context, file) {
+  loadFile(context) {
     context.commit('setLoading')
-    const reader = new FileReader()
-    reader.onload = (e) => context.commit('loadText', e.target.result)
-    reader.readAsText(file)
+
+    return new Promise((resolve, reject) => {
+      new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.readAsText(context.state.file)
+      }).then((result) => {
+        context.commit('setParser', new Parser(result))
+        resolve()
+        context.commit('unsetLoading')
+      })
+    })
+  },
+
+  buildChunker(context) {
+    context.commit('setLoading')
+
+    return new Promise((resolve, reject) => {
+      context.commit(
+        'setChunker',
+        new Chunker(
+          context.state.parser,
+          context.state.splitBasis,
+          context.state.keptColumns
+        )
+      )
+
+      resolve()
+      context.commit('unsetLoading')
+    })
   }
 }
 
