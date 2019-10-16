@@ -3,11 +3,18 @@ import Chunker from '~/plugins/chunker'
 
 export const state = () => ({
   loading: false,
-  splitBasis: 8,
+  file: null,
+  rawText: null,
+  parser: null,
+  chunker: null,
+  fileHeader: null,
+  parsedChart: null,
+  columns: null,
+  columnItems: null,
   keptColumns: [12, 14],
-  chunker: false,
-  parser: false,
-  file: null
+  splitBasis: 8,
+  spcColumn: 12,
+  voltageColumn: 14
 })
 
 export const mutations = {
@@ -30,6 +37,14 @@ export const mutations = {
 
   setSplitBasis(state, value) {
     state.splitBasis = value
+  },
+
+  setSpcColumn(state, payload) {
+    state.spcColumn = payload
+  },
+
+  setVoltageColumn(state, payload) {
+    state.VoltageColumn = payload
   },
 
   setKeptColumns(state, value) {
@@ -55,7 +70,7 @@ export const actions = {
     context.commit('setLoading')
 
     return new Promise((resolve, reject) => {
-      new Promise((resolve, reject) => {
+      new Promise(function(resolve, reject) {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.readAsText(context.state.file)
@@ -111,11 +126,27 @@ export const getters = {
     }
   },
 
+  keptColumnItems: (state, getters) => {
+    return state.parser.columnItems.filter((item) =>
+      state.keptColumns.includes(item.value)
+    )
+  },
+
   columns: (state, _getters) => {
     if (state.parser) {
       return state.parser.columns
     } else {
       return []
     }
+  },
+
+  spcColumn: (state, getters) => {
+    return getters.columnItems.find((item) => item.value === state.spcColumn)
+  },
+
+  voltageColumn: (state, getters) => {
+    return getters.columnItems.find(
+      (item) => item.value === state.voltageColumn
+    )
   }
 }
