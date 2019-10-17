@@ -16,6 +16,27 @@ export default class Chunker {
     this.buildCycles()
   }
 
+  get overview() {
+    return {
+      headers: [
+        'Cycle #',
+        'Charge Specific Capacity',
+        'Discharge Specific Capacity',
+        'Charge Efficiency [%]',
+        'Retention [%]'
+      ],
+      lines: this.cycles.map((cycle) => {
+        return [
+          cycle.index,
+          cycle.charge.specificCapacity,
+          cycle.discharge.specificCapacity,
+          cycle.chargeEfficiency,
+          this.getRetention(cycle)
+        ]
+      })
+    }
+  }
+
   get splitBasis() {
     return this.context.state.splitBasis // Which value to use for splits
   }

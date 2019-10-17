@@ -18,35 +18,13 @@
         <v-card-title>
           <h4 class="text-center mx-auto">{{ cycleCount }} cycles detected.</h4>
         </v-card-title>
-        <v-card-text>
-          <v-simple-table dense fixed-header height="800">
-            <thead>
-              <tr>
-                <th>Cycle #</th>
-                <th>Charge Specific Capacity</th>
-                <th>Discharge Specific Capacity</th>
-                <th>Charge Efficiency [%]</th>
-                <th>Retention [%]</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="cycle in cycles" :key="cycle.index">
-                <td>{{ cycle.index }}</td>
-                <td>{{ cycle.charge.specificCapacity }}</td>
-                <td>{{ cycle.discharge.specificCapacity }}</td>
-                <td>{{ cycle.chargeEfficiency }}</td>
-                <td>{{ chunker.getRetention(cycle) }}</td>
-              </tr>
-            </tbody>
-          </v-simple-table>
-        </v-card-text>
+        <DataTable :dataObject="overviewTableData" />
       </v-tab-item>
       <v-tab-item>
-        <v-card-title
-          >Cycle # {{ selectedCycleIndex + 1 }} of
-          {{ cycleCount }}</v-card-title
-        >
+        <v-card-title>
+          Cycle # {{ selectedCycleIndex + 1 }} of
+          {{ cycleCount }}
+        </v-card-title>
         <v-card-text>
           <v-slider
             v-model="selectedCycleIndex"
@@ -70,29 +48,7 @@
             <v-tab-item>Analysis data here</v-tab-item>
             <v-tab-item>Chart here?</v-tab-item>
             <v-tab-item>
-              <v-simple-table dense fixed-header height="800">
-                <thead>
-                  <tr>
-                    <th v-for="header in selectedCycle.headers" :key="header">
-                      {{ header }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(line,
-                    lineIndex) in selectedCycle.processedLines.slice(1)"
-                    :key="lineIndex"
-                  >
-                    <td
-                      v-for="(entry, entryIndex) in line"
-                      :key="lineIndex.toString() + entryIndex.toString()"
-                    >
-                      {{ entry }}
-                    </td>
-                  </tr>
-                </tbody>
-              </v-simple-table>
+              <DataTable :dataObject="selectedCycleTableData" />
             </v-tab-item>
           </v-tabs-items>
         </v-card-text>
@@ -103,6 +59,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
+import DataTable from '~/components/DataTable.vue'
 
 export default {
   data() {
@@ -112,9 +69,22 @@ export default {
       detailTabs: 0
     }
   },
+
+  components: { DataTable },
+
   computed: {
     ...mapState(['chunker']),
     ...mapGetters(['cycles', 'cycleCount']),
+    selectedCycleTableData() {
+      return {
+        headers: this.selectedCycle.headers,
+        lines: this.selectedCycle.processedLines.slice(1)
+      }
+    },
+
+    overviewTableData() {
+      return this.chunker.overview
+    },
 
     selectedCycle() {
       return this.cycles[this.selectedCycleIndex]
