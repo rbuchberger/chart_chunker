@@ -1,27 +1,26 @@
 <template>
   <v-card>
-    <v-card-title class="headline">
-      Can I have your file?
-    </v-card-title>
+    <v-card-title class="headline">Can I have your file?</v-card-title>
+
     <v-card-text>
       <p>
         I will look for a line that says "RESULTS TABLE:", and parse everything
         below it as CSV.
       </p>
-
       <v-file-input v-model="handleFile" />
 
       <v-card-actions>
         <v-spacer />
         <v-btn
           large
-          color="orange"
           :disabled="!file"
-          class="px-3"
           :loading="loading"
+          class="px-3"
+          color="orange"
           @click="handleNext"
         >
-          Go <v-icon class="ml-3">mdi-page-next-outline</v-icon>
+          Go
+          <v-icon class="ml-3">mdi-page-next-outline</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card-text>
@@ -45,7 +44,7 @@ export default {
   },
 
   methods: {
-    handleNext(e) {
+    handleNext() {
       this.loadFile().then(() => this.$router.push('outputSettings'))
     },
     ...mapActions(['loadFile']),
