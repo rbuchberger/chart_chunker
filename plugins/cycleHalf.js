@@ -33,6 +33,60 @@ export default class CycleHalf {
     return this.averageSplitBasis < 0
   }
 
+  get maxVoltage() {
+    return parseFloat(this._findLargest(this.voltageColumn).value)
+  }
+
+  get minVoltage() {
+    return parseFloat(this._findSmallest(this.voltageColumn).value)
+  }
+
+  get maxSpecificCapacity() {
+    return parseFloat(this._findLargest(this.spcColumn).value)
+  }
+
+  get minSpecificCapacity() {
+    return parseFloat(this._findSmallest(this.spcColumn).value)
+  }
+
+  get specificCapacity() {
+    return this.maxSpecificCapacity - this.minSpecificCapacity
+  }
+
+  _findLargest(column) {
+    const largest = this.lines.reduce(
+      (accumulator, item, index) => {
+        const candidate = Math.abs(parseFloat(item[column]))
+        if (candidate > accumulator.value) {
+          accumulator.value = candidate
+          accumulator.index = index
+        }
+
+        return accumulator
+      },
+      { value: 0, index: 0 }
+    )
+
+    return largest
+  }
+
+  _findSmallest(column) {
+    const smallest = this.lines.reduce(
+      (accumulator, item, index) => {
+        const candidate = Math.abs(parseFloat(item[column]))
+        if (candidate < accumulator.value) {
+          accumulator.value = candidate
+          accumulator.index = index
+        }
+
+        return accumulator
+      },
+      { value: this.lines[0][column], index: 0 }
+    )
+
+    return smallest
+  }
+
   get averageSplitBasis() {
     if (!this._averageSplitBasis) {
       const total = this.lines.reduce(
