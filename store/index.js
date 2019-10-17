@@ -14,7 +14,8 @@ export const state = () => ({
   keptColumns: [12, 14],
   splitBasis: 8,
   spcColumn: 12,
-  voltageColumn: 14
+  voltageColumn: 14,
+  cycles: []
 })
 
 export const mutations = {
@@ -62,6 +63,14 @@ export const mutations = {
   setParser(state, parser) {
     state.parser = parser
     state.columns = parser.columns
+  },
+
+  addCycle(state, cycle) {
+    state.cycles.push(cycle)
+  },
+
+  clearCycles(state) {
+    state.cycles = []
   }
 }
 
@@ -85,15 +94,8 @@ export const actions = {
   buildChunker(context) {
     context.commit('setLoading')
 
-    return new Promise((resolve, reject) => {
-      context.commit(
-        'setChunker',
-        new Chunker(
-          context.state.parser,
-          context.state.splitBasis,
-          context.state.keptColumns
-        )
-      )
+    return new Promise((resolve) => {
+      context.commit('setChunker', new Chunker(context))
 
       resolve()
       context.commit('unsetLoading')

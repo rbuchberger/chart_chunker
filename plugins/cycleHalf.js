@@ -1,10 +1,28 @@
 export default class CycleHalf {
-  constructor(lines, baseHeaders, splitBasis, keptColumns, index) {
+  constructor(lines, index, context) {
     this.lines = lines
-    this.baseHeaders = baseHeaders
-    this.splitBasis = splitBasis
-    this.keptColumns = keptColumns
+    this.context = context
     this.index = index
+  }
+
+  get baseHeaders() {
+    return this.context.columns
+  }
+
+  get splitBasis() {
+    return this.context.splitBasis
+  }
+
+  get keptColumns() {
+    return this.context.keptColumns
+  }
+
+  get spcColumn() {
+    return this.context.spcColumn
+  }
+
+  get voltageColumn() {
+    return this.context.voltageColumn
   }
 
   get isCharge() {
