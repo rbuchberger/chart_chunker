@@ -78,8 +78,8 @@ export const actions = {
   loadFile(context) {
     context.commit('setLoading')
 
-    return new Promise((resolve, reject) => {
-      new Promise(function(resolve, reject) {
+    return new Promise((resolve) => {
+      new Promise(function(resolve) {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.readAsText(context.state.file)
@@ -104,7 +104,7 @@ export const actions = {
 }
 
 export const getters = {
-  cycles: (state, _getters) => {
+  cycles: (state) => {
     if (state.chunker) {
       return state.chunker.cycles
     } else {
@@ -112,7 +112,7 @@ export const getters = {
     }
   },
 
-  cycleCount: (state, _getters) => {
+  cycleCount: (state) => {
     if (state.chunker) {
       return state.chunker.cycleCount
     } else {
@@ -120,7 +120,7 @@ export const getters = {
     }
   },
 
-  columnItems: (state, _getters) => {
+  columnItems: (state) => {
     if (state.parser) {
       return state.parser.columnItems
     } else {
@@ -128,13 +128,13 @@ export const getters = {
     }
   },
 
-  keptColumnItems: (state, getters) => {
+  keptColumnItems: (state) => {
     return state.parser.columnItems.filter((item) =>
       state.keptColumns.includes(item.value)
     )
   },
 
-  columns: (state, _getters) => {
+  columns: (state) => {
     if (state.parser) {
       return state.parser.columns
     } else {
