@@ -63,6 +63,14 @@ export default class Chunker {
     })
   }
 
+  get unparsedOverview() {
+    return Papa.unparse(
+      [this.overview.headers].concat(this.overview.lines),
+
+      { delimiter: '\t' }
+    )
+  }
+
   get concatenated() {
     return new Concatenator(this.cycles).concatenated
   }

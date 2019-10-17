@@ -11,8 +11,8 @@
       <v-tab-item>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="copyAll">Copy all cycles to clipboard</v-btn>
-          <v-btn disabled>Download all</v-btn>
+          <v-btn @click="copySummary">Copy Summary</v-btn>
+          <v-btn @click="copyAll">Copy all cycles</v-btn>
           <v-spacer />
         </v-card-actions>
         <v-card-title>
@@ -96,6 +96,11 @@ export default {
 
     unparsedAll() {
       return this.chunker.unparsed
+    },
+
+    unparsedOverview() {
+      console.log(this.chunker.unparsedOverview)
+      return this.chunker.unparsedOverview
     }
   },
 
@@ -114,6 +119,10 @@ export default {
 
     copyCurrent() {
       this.$copyText(this.unparsedCurrent)
+    },
+
+    copySummary() {
+      this.$copyText(this.unparsedOverview)
     }
   }
 }
