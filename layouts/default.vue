@@ -11,9 +11,11 @@
               </p>
             </header>
             <v-banner two-line class="my-3">
-              <v-avatar slot="icon" size="40"
-                ><v-icon color="red">mdi-alert-circle-outline</v-icon></v-avatar
-              >
+              <v-avatar slot="icon" size="40">
+                <v-icon color="red">
+                  mdi-alert-circle-outline
+                </v-icon>
+              </v-avatar>
               Warning: This tool is still under construction. It has no input
               validation, no error handling, and is mostly untested. Use with
               caution, and double-check anything it gives you.
