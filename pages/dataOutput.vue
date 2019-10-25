@@ -3,7 +3,7 @@
     <v-card-actions>
       <v-btn nuxt color="grey darken-2" to="/outputSettings">Back</v-btn>
     </v-card-actions>
-    <v-tabs v-model="tabs" center-active centered>
+    <v-tabs v-model="tabs" center-active centered color="orange">
       <v-tab>Overview</v-tab>
       <v-tab>Cycle Details</v-tab>
     </v-tabs>
@@ -12,7 +12,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn @click="copySummary">Copy Summary</v-btn>
-          <v-btn @click="copyAll">Copy all cycles</v-btn>
+          <v-btn @click="copyAll">Copy Data (all)</v-btn>
           <v-spacer />
         </v-card-actions>
         <v-card-title>
@@ -26,27 +26,49 @@
           {{ cycleCount }}
         </v-card-title>
         <v-card-text>
-          <v-slider
-            v-model="selectedCycleIndex"
-            :max="cycleCount - 1"
-            color="orange"
-            label="Select Cycle: "
-            ticks
-          />
+          <v-row align="center">
+            <v-col cols="2">
+              <v-text-field outlined v-model="selectedCycleIndexPlusOne" />
+            </v-col>
+            <v-col cols="1">
+              <v-btn icon @click="selectedCycleIndex--" class="my-auto">
+                <v-icon>mdi-menu-left</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-slider
+                class="my-auto"
+                v-model="selectedCycleIndex"
+                :max="cycleCount - 1"
+                color="orange"
+                ticks
+              />
+            </v-col>
+            <v-col cols="1">
+              <v-btn icon @click="selectedCycleIndex++" class="my-auto">
+                <v-icon>mdi-menu-right</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
           <v-card-actions>
             <v-spacer />
-            <v-btn @click="copyCurrent">Copy this cycle to clipboard</v-btn>
+            <v-btn @click="copyCurrentAnalysis" disabled>Copy Analysis</v-btn>
+            <v-btn @click="copyCurrent">Copy Data</v-btn>
             <v-spacer />
           </v-card-actions>
           <textarea id="select-box" hidden="true" />
-          <v-tabs v-model="detailTabs" center-active centered>
+          <v-tabs v-model="detailTabs" center-active centered color="orange">
             <v-tab>Analysis</v-tab>
-            <v-tab>Visualization</v-tab>
+            <!-- <v-tab>Visualization</v-tab> -->
             <v-tab>Table</v-tab>
           </v-tabs>
           <v-tabs-items v-model="detailTabs" mandatory>
-            <v-tab-item>Analysis data here</v-tab-item>
-            <v-tab-item>Chart here?</v-tab-item>
+            <v-tab-item>
+              Charge Efficiency: {{ selectedCycle.chargeEfficiency }}
+              Retention: {{ chunker.getRetention(selectedCycle) }}
+              <DataTable :dataObject="selectedCycle.overview" />
+            </v-tab-item>
+            <!-- <v-tab-item>Chart here?</v-tab-item> -->
             <v-tab-item>
               <DataTable :dataObject="selectedCycleTableData" />
             </v-tab-item>
@@ -101,6 +123,10 @@ export default {
     unparsedOverview() {
       console.log(this.chunker.unparsedOverview)
       return this.chunker.unparsedOverview
+    },
+
+    selectedCycleIndexPlusOne() {
+      return this.selectedCycleIndex + 1
     }
   },
 
