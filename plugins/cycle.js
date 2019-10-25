@@ -9,6 +9,42 @@ export default class Cycle {
     this.index = index
   }
 
+  get overview() {
+    return {
+      headers: ['', 'Charge', 'Discharge'],
+      lines: [
+        // split basis average
+        [
+          'Average Current',
+          this.charge.averageSplitBasis,
+          this.discharge.averageSplitBasis
+        ],
+        // charge & discharge max voltage
+        ['Max Voltage', this.charge.maxVoltage, this.discharge.maxVoltage],
+        // charge & discharge min voltage
+        ['Min Voltage', this.charge.minVoltage, this.discharge.minVoltage],
+        // charge & discharge max spc
+        [
+          'Max Specific Capacity',
+          this.charge.maxSpecificCapacity,
+          this.discharge.maxSpecificCapacity
+        ],
+        // charge & discharge min min spc
+        [
+          'Min Specific Capacity',
+          this.charge.minSpecificCapacity,
+          this.discharge.minSpecificCapacity
+        ],
+        // overall spc
+        [
+          'Overall Specific Capacity',
+          this.charge.specificCapacity,
+          this.discharge.specificCapacity
+        ]
+      ]
+    }
+  }
+
   get baseHeaders() {
     return this.context.columns // unfiltered header columns
   }
