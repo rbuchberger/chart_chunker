@@ -1,76 +1,216 @@
 <template>
   <v-card class="my-5">
-    <v-card-actions>
-      <v-btn nuxt color="grey darken-2" to="/outputSettings">Back</v-btn>
-    </v-card-actions>
-    <v-tabs v-model="tabs" center-active centered color="orange">
-      <v-tab>Overview</v-tab>
+    <v-container class="mb-5">
+      <v-row
+        align="center"
+        class="text-center"
+      >
+        <v-col cols="2">
+          <v-btn
+            nuxt
+            color="grey darken-2"
+            to="/outputSettings"
+          >
+            Back
+          </v-btn>
+        </v-col>
+
+        <v-col class="text-center">
+          <v-btn
+            class="mono body-2 nocap"
+            elevation="12"
+            outlined
+            nuxt
+            to="/"
+            large
+          >
+            {{ file.name }}
+          </v-btn>
+        </v-col>
+
+        <v-col cols="2" />
+      </v-row>
+    </v-container>
+
+    <v-tabs
+      v-model="tabs"
+      center-active
+      grow
+      color="orange"
+    >
+      <v-tab>Analysis</v-tab>
       <v-tab>Cycle Details</v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tabs" mandatory>
+    <v-tabs-items
+      v-model="tabs"
+      mandatory
+    >
       <v-tab-item>
-        <v-card-actions>
+        <v-row>
           <v-spacer />
-          <v-btn @click="copySummary">Copy Summary</v-btn>
-          <v-btn @click="copyAll">Copy Data (all)</v-btn>
+          <v-col cols="4" class="text-right">
+            <v-btn @click="copySummary">
+              <v-icon
+                left
+                color="orange"
+              >
+                mdi-clipboard-outline
+              </v-icon>
+              Copy This Analysis
+            </v-btn>
+          </v-col>
+          <v-col cols="4">
+            <v-btn @click="copyAll">
+              <v-icon
+                left
+                color="orange"
+              >
+                mdi-clipboard-outline
+              </v-icon>Copy All Data
+            </v-btn>
+          </v-col>
           <v-spacer />
-        </v-card-actions>
+        </v-row>
         <v-card-title>
-          <h4 class="text-center mx-auto">{{ cycleCount }} cycles detected.</h4>
+          <h4 class="headline mb-3">
+            {{ cycleCount }} cycles detected:
+          </h4>
         </v-card-title>
-        <DataTable :dataObject="overviewTableData" />
+        <DataTable :data-object="overviewTableData" />
       </v-tab-item>
       <v-tab-item>
-        <v-card-title>
-          Cycle # {{ selectedCycleIndex + 1 }} of
-          {{ cycleCount }}
-        </v-card-title>
-        <v-card-text>
-          <v-row align="center">
+        <v-container>
+          <v-row align="start">
+            <v-spacer />
+            <v-col
+              cols="2"
+              class="text-right"
+            >
+              <h4 class="headline">
+                Cycle #
+              </h4>
+            </v-col>
             <v-col cols="2">
-              <v-text-field outlined v-model="selectedCycleIndexPlusOne" />
-            </v-col>
-            <v-col cols="1">
-              <v-btn icon @click="selectedCycleIndex--" class="my-auto">
-                <v-icon>mdi-menu-left</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col>
-              <v-slider
-                class="my-auto"
-                v-model="selectedCycleIndex"
-                :max="cycleCount - 1"
-                color="orange"
-                ticks
+              <v-text-field
+                v-model="selectedCycleIndexPlusOne"
+                dense
+                outlined
               />
             </v-col>
-            <v-col cols="1">
-              <v-btn icon @click="selectedCycleIndex++" class="my-auto">
+            <v-col
+              cols="2"
+              class="text-left"
+            >
+              <h4 class="headline">
+                of {{ cycleCount }}
+              </h4>
+            </v-col>
+            <v-spacer />
+          </v-row>
+        </v-container>
+
+        <v-card-text>
+          <div class="d-flex">
+            <div class="flex-grow-0">
+              <v-btn
+                icon
+                class="my-auto"
+                @click="selectedCycleIndex -= 10"
+              >
+                <v-icon>mdi-rewind</v-icon>
+              </v-btn>
+            </div>
+            <div class="flex-grow-0">
+              <v-btn
+                icon
+                class="my-auto"
+                @click="selectedCycleIndex--"
+              >
+                <v-icon>mdi-menu-left</v-icon>
+              </v-btn>
+            </div>
+            <div class="flex-grow-1">
+              <v-slider
+                v-model="selectedCycleIndex"
+                class="my-auto"
+                :max="cycleCount - 1"
+                color="orange"
+              />
+            </div>
+            <div class="flex-grow-0">
+              <v-btn
+                icon
+                class="my-auto"
+                @click="selectedCycleIndex++"
+              >
                 <v-icon>mdi-menu-right</v-icon>
               </v-btn>
+            </div>
+            <div class="flex-grow-0">
+              <v-btn
+                icon
+                class="my-auto"
+                @click="selectedCycleIndex += 10"
+              >
+                <v-icon>mdi-fast-forward</v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <v-row>
+            <v-spacer />
+            <v-col cols="3" class="text-right">
+              <v-btn
+                disabled
+                @click="copyCurrentAnalysis"
+              >
+                <v-icon
+                  left
+                  color="primary"
+                >
+                  mdi-clipboard-outline
+                </v-icon>
+                Copy Analysis
+              </v-btn>
             </v-col>
+            <v-col cols="3">
+              <v-btn @click="copyCurrent">
+                <v-icon
+                  left
+                  color="primary"
+                >
+                  mdi-clipboard-outline
+                </v-icon>
+                Copy Data
+              </v-btn>
+            </v-col>
+            <v-spacer />
           </v-row>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn @click="copyCurrentAnalysis" disabled>Copy Analysis</v-btn>
-            <v-btn @click="copyCurrent">Copy Data</v-btn>
-            <v-spacer />
-          </v-card-actions>
-          <textarea id="select-box" hidden="true" />
-          <v-tabs v-model="detailTabs" center-active centered color="orange">
+          <textarea
+            id="select-box"
+            hidden="true"
+          />
+          <v-tabs
+            v-model="detailTabs"
+            center-active
+            centered
+            color="orange"
+          >
             <v-tab>Analysis</v-tab>
             <!-- <v-tab>Visualization</v-tab> -->
-            <v-tab>Table</v-tab>
+            <v-tab>Data</v-tab>
           </v-tabs>
-          <v-tabs-items v-model="detailTabs" mandatory>
+          <v-tabs-items
+            v-model="detailTabs"
+            mandatory
+          >
             <v-tab-item>
-              Charge Efficiency: {{ selectedCycle.chargeEfficiency }}
-              Retention: {{ chunker.getRetention(selectedCycle) }}
-              <DataTable :dataObject="selectedCycle.overview" />
+              Charge Efficiency: {{ selectedCycle.chargeEfficiency }} Retention:
+              {{ chunker.getRetention(selectedCycle) }}
+              <DataTable :data-object="selectedCycle.overview" />
             </v-tab-item>
             <!-- <v-tab-item>Chart here?</v-tab-item> -->
             <v-tab-item>
-              <DataTable :dataObject="selectedCycleTableData" />
+              <DataTable :data-object="selectedCycleTableData" />
             </v-tab-item>
           </v-tabs-items>
         </v-card-text>
@@ -84,6 +224,7 @@ import { mapState, mapGetters } from 'vuex'
 import DataTable from '~/components/DataTable.vue'
 
 export default {
+  components: { DataTable },
   data() {
     return {
       selectedCycleIndex: 0,
@@ -92,10 +233,8 @@ export default {
     }
   },
 
-  components: { DataTable },
-
   computed: {
-    ...mapState(['chunker']),
+    ...mapState(['chunker', 'file']),
     ...mapGetters(['cycles', 'cycleCount']),
     selectedCycleTableData() {
       return {
@@ -121,7 +260,6 @@ export default {
     },
 
     unparsedOverview() {
-      console.log(this.chunker.unparsedOverview)
       return this.chunker.unparsedOverview
     },
 
