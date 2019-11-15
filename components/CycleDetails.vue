@@ -10,26 +10,42 @@
         cols="3"
         class="text-right"
       >
-        <v-btn disabled>
-          <v-icon
-            left
-            color="primary"
-          >
-            mdi-clipboard-outline
-          </v-icon>
-          Copy Analysis
-        </v-btn>
+        <v-tooltip bottom>
+          <template #activator="{ on }">
+            <v-btn
+              disabled
+              v-on="on"
+            >
+              <v-icon
+                left
+                color="primary"
+              >
+                mdi-clipboard-outline
+              </v-icon>
+              Copy Analysis
+            </v-btn>
+          </template>
+          Copy the table below <v-icon>mdi-arrow-down</v-icon>
+        </v-tooltip>
       </v-col>
       <v-col cols="3">
-        <v-btn @click="copyCurrent">
-          <v-icon
-            left
-            color="primary"
-          >
-            mdi-clipboard-outline
-          </v-icon>
-          Copy Data
-        </v-btn>
+        <v-tooltip bottom>
+          <template #activator="{on}">
+            <v-btn
+              @click="copyCurrent"
+              v-on="on"
+            >
+              <v-icon
+                left
+                color="primary"
+              >
+                mdi-clipboard-outline
+              </v-icon>
+              Copy Data
+            </v-btn>
+          </template>
+          Copy the formatted data for this cycle only.
+        </v-tooltip>
       </v-col>
       <v-spacer />
     </v-row>
