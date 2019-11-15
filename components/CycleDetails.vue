@@ -55,12 +55,8 @@
     />
     <v-tabs
       v-model="detailTabs"
-      center-active
-      centered
-      color="orange"
     >
       <v-tab>Analysis</v-tab>
-      <!-- <v-tab>Visualization</v-tab> -->
       <v-tab>Data</v-tab>
     </v-tabs>
     <v-tabs-items
@@ -72,7 +68,6 @@
         {{ chunker.getRetention(selectedCycle) }}
         <DataTable :data-object="selectedCycle.overview" />
       </v-tab-item>
-      <!-- <v-tab-item>Chart here?</v-tab-item> -->
       <v-tab-item>
         <DataTable :data-object="selectedCycleTableData" />
       </v-tab-item>
