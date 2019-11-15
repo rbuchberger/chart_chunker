@@ -3,11 +3,19 @@ import Chunker from '~/plugins/chunker'
 
 export const state = () => ({
   loading: false,
-  splitBasis: 8,
+  file: null,
+  rawText: null,
+  parser: null,
+  chunker: null,
+  fileHeader: null,
+  parsedChart: null,
+  columns: null,
+  columnItems: null,
   keptColumns: [12, 14],
-  chunker: false,
-  parser: false,
-  file: null
+  splitBasis: 8,
+  spcColumn: 12,
+  voltageColumn: 14,
+  cycles: []
 })
 
 export const mutations = {
@@ -32,6 +40,14 @@ export const mutations = {
     state.splitBasis = value
   },
 
+  setSpcColumn(state, payload) {
+    state.spcColumn = payload
+  },
+
+  setVoltageColumn(state, payload) {
+    state.VoltageColumn = payload
+  },
+
   setKeptColumns(state, value) {
     state.keptColumns = value
   },
@@ -47,6 +63,20 @@ export const mutations = {
   setParser(state, parser) {
     state.parser = parser
     state.columns = parser.columns
+    state.columnItems = parser.columnItems
+  },
+
+  addCycle(state, cycle) {
+    state.cycles.push(cycle)
+  },
+
+  clearCycles(state) {
+    state.cycles = []
+  },
+
+  modColumn(state, payload) {
+    console.log(payload)
+    // state.columnItems[payload.value] = payload
   }
 }
 
@@ -54,8 +84,8 @@ export const actions = {
   loadFile(context) {
     context.commit('setLoading')
 
-    return new Promise((resolve, reject) => {
-      new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
+      new Promise(function(resolve) {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
         reader.readAsText(context.state.file)
@@ -70,15 +100,8 @@ export const actions = {
   buildChunker(context) {
     context.commit('setLoading')
 
-    return new Promise((resolve, reject) => {
-      context.commit(
-        'setChunker',
-        new Chunker(
-          context.state.parser,
-          context.state.splitBasis,
-          context.state.keptColumns
-        )
-      )
+    return new Promise((resolve) => {
+      context.commit('setChunker', new Chunker(context))
 
       resolve()
       context.commit('unsetLoading')
@@ -87,7 +110,7 @@ export const actions = {
 }
 
 export const getters = {
-  cycles: (state, _getters) => {
+  cycles: (state) => {
     if (state.chunker) {
       return state.chunker.cycles
     } else {
@@ -95,7 +118,7 @@ export const getters = {
     }
   },
 
-  cycleCount: (state, _getters) => {
+  cycleCount: (state) => {
     if (state.chunker) {
       return state.chunker.cycleCount
     } else {
@@ -103,19 +126,27 @@ export const getters = {
     }
   },
 
-  columnItems: (state, _getters) => {
-    if (state.parser) {
-      return state.parser.columnItems
-    } else {
-      return []
-    }
+  keptColumnItems: (state) => {
+    return state.parser.columnItems.filter((item) =>
+      state.keptColumns.includes(item.value)
+    )
   },
 
-  columns: (state, _getters) => {
+  columns: (state) => {
     if (state.parser) {
       return state.parser.columns
     } else {
       return []
     }
+  },
+
+  spcColumn: (state) => {
+    return state.columnItems.find((item) => item.value === state.spcColumn)
+  },
+
+  voltageColumn: (state) => {
+    return state.columnItems.find(
+      (item) => item.value === state.voltageColumn
+    )
   }
 }

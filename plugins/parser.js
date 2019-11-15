@@ -13,7 +13,11 @@ export default class Parser {
     this.columns = this.parsedChart.data.shift()
     this.columnItems = this.columns.map((label, index) => ({
       text: label,
-      value: index
+      value: index,
+      labelMod: label,
+      multiply: 1,
+      abs: true,
+      round: 3
     }))
   }
 

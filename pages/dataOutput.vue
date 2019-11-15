@@ -1,95 +1,83 @@
 <template>
   <v-card class="my-5">
-    <v-card-actions>
-      <v-btn nuxt color="grey darken-2" to="/outputSettings">Back</v-btn>
-    </v-card-actions>
-    <v-card-title>
-      Cycle # {{ selectedCycleIndex + 1 }} of {{ cycleCount }}
-    </v-card-title>
-    <v-card-text>
-      <v-slider
-        v-model="selectedCycleIndex"
-        :max="cycleCount - 1"
-        color="orange"
-        label="Select Cycle: "
-        ticks
-      />
-      <v-card-actions>
-        <v-spacer />
-        <v-btn @click="copyCurrent">Copy this</v-btn>
-        <v-btn @click="copyAll">Copy all</v-btn>
-        <v-btn disabled>Download all</v-btn>
-        <v-spacer />
-      </v-card-actions>
-      <textarea hidden="true" id="select-box" />
-      <v-simple-table dense light>
-        <thead>
-          <tr>
-            <th v-for="header in selectedCycle.headers" :key="header">
-              {{ header }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(line, lineIndex) in selectedCycle.processedLines.slice(1)"
-            :key="lineIndex"
+    <v-container class="mb-5">
+      <v-row
+        align="center"
+        class="text-center"
+      >
+        <v-col cols="2">
+          <v-btn
+            nuxt
+            color="grey darken-2"
+            to="/outputSettings"
           >
-            <td
-              v-for="(entry, entryIndex) in line"
-              :key="lineIndex.toString() + entryIndex.toString()"
-            >
-              {{ entry }}
-            </td>
-          </tr>
-        </tbody>
-      </v-simple-table>
-    </v-card-text>
+            Back
+          </v-btn>
+        </v-col>
+
+        <v-col class="text-center">
+          <v-btn
+            class="mono body-2 nocap mb-5 text-truncate"
+            elevation="12"
+            outlined
+            nuxt
+            to="/"
+            large
+          >
+            {{ file.name }}
+          </v-btn>
+        </v-col>
+
+        <v-col cols="2" />
+      </v-row>
+
+      <v-row justify="center">
+        <v-tabs
+          v-model="tabs"
+          centered
+          color="orange"
+          icons-and-text="icons"
+        >
+          <v-tab>
+            Overview
+            <v-icon>mdi-magnify-minus</v-icon>
+          </v-tab>
+          <v-tab>
+            Details
+            <v-icon>mdi-magnify-plus</v-icon>
+          </v-tab>
+        </v-tabs>
+      </v-row>
+      <v-tabs-items
+        v-model="tabs"
+        mandatory
+      >
+        <v-tab-item>
+          <AllCycles />
+        </v-tab-item>
+        <v-tab-item>
+          <CycleDetails />
+        </v-tab-item>
+      </v-tabs-items>
+    </v-container>
   </v-card>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import AllCycles from '~/components/AllCycles.vue'
+import CycleDetails from '~/components/CycleDetails.vue'
+import { mapState } from 'vuex'
 
 export default {
+  components: { AllCycles, CycleDetails },
   data() {
     return {
-      selectedCycleIndex: 0
+      tabs: 0
     }
   },
+
   computed: {
-    ...mapState(['chunker']),
-    ...mapGetters(['cycles', 'cycleCount']),
-
-    selectedCycle() {
-      return this.cycles[this.selectedCycleIndex]
-    },
-
-    unparsedCurrent() {
-      return this.selectedCycle.unparsed
-    },
-
-    unparsedAll() {
-      return this.chunker.unparsed
-    }
-  },
-
-  methods: {
-    successfulCopy() {
-      console.log('SuccessfulCopy')
-    },
-
-    errorCopy() {
-      console.log('Error copying text')
-    },
-
-    copyAll() {
-      this.$copyText(this.unparsedAll)
-    },
-
-    copyCurrent() {
-      this.$copyText(this.unparsedCurrent)
-    }
+    ...mapState(['file'])
   }
 }
 </script>

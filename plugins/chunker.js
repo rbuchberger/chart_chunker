@@ -10,14 +10,59 @@ import Concatenator from '~/plugins/concatenator'
 // line.
 
 export default class Chunker {
-  constructor(parser, splitBasis, keptColumns) {
-    this.splitBasis = splitBasis // Which value to use for splits
-    this.columnNames = parser.columns
-    this.keptColumns = keptColumns.slice().sort() // order matters
-    this.parsedChart = parser.parsedChart // Array of arrays (papa-parsed CSV)
-    this.cycles = []
+  constructor(context) {
+    this.context = context
+    context.commit('clearCycles')
     this.buildCycles()
-    this.buildStats()
+  }
+
+  get overview() {
+    return {
+      headers: [
+        'Cycle #',
+        'Charge Specific Capacity',
+        'Discharge Specific Capacity',
+        'Charge Efficiency [%]',
+        'Retention [%]'
+      ],
+      lines: this.cycles.map((cycle) => {
+        return [
+          cycle.index,
+          cycle.charge.specificCapacity,
+          cycle.discharge.specificCapacity,
+          cycle.chargeEfficiency,
+          this.getRetention(cycle)
+        ]
+      })
+    }
+  }
+
+  get chargeEffArray() {
+    return this.cycles.map((cycle) => cycle.chargeEfficiency)
+  }
+
+  get retentionArray() {
+    return this.cycles.map((cycle) => this.getRetention(cycle))
+  }
+
+  get splitBasis() {
+    return this.context.state.splitBasis // Which value to use for splits
+  }
+
+  get columnNames() {
+    return this.context.state.parser.columns
+  }
+
+  get keptColumns() {
+    return this.context.state.keptColumns.slice().sort() // order matters
+  }
+
+  get parsedChart() {
+    return this.context.state.parser.parsedChart // Array of arrays (papa-parsed CSV)
+  }
+
+  get cycles() {
+    return this.context.state.cycles
   }
 
   get unparsed() {
@@ -26,12 +71,28 @@ export default class Chunker {
     })
   }
 
+  get unparsedOverview() {
+    return Papa.unparse(
+      [this.overview.headers].concat(this.overview.lines),
+
+      { delimiter: '\t' }
+    )
+  }
+
   get concatenated() {
     return new Concatenator(this.cycles).concatenated
   }
 
-  buildStats() {
-    this.cycleCount = this.cycles.length
+  get cycleCount() {
+    return this.cycles.length
+  }
+
+  getRetention(cycle) {
+    const ratio =
+      cycle.discharge.maxSpecificCapacity /
+      this.cycles[0].discharge.maxSpecificCapacity
+
+    return Math.round(ratio * 10000) / 100
   }
 
   buildCycles() {
@@ -74,15 +135,24 @@ export default class Chunker {
     }
   }
 
+  get smallContext() {
+    return {
+      splitBasis: this.splitBasis,
+      columns: this.columnNames,
+      keptColumns: this.keptColumns,
+      spcColumn: this.context.state.spcColumn,
+      voltageColumn: this.context.state.voltageColumn
+    }
+  }
+
   addHalfCycle(lines) {
     if (this.halfCycle) {
-      this.cycles.push(
+      this.context.commit(
+        'addCycle',
         new Cycle(
           [this.halfCycle, lines],
-          this.columnNames,
-          this.splitBasis,
-          this.keptColumns,
-          this.cycles.length + 1
+          this.cycleCount + 1,
+          this.smallContext
         )
       )
 
