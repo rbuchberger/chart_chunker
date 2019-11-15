@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title>
       <h2 class="text-center display-3 mx-auto">
-        Can I have your file?
+        Can I see your data?
       </h2>
     </v-card-title>
 
@@ -17,7 +17,7 @@
           <v-file-input
             v-model="handleFile"
             hint="I will look for a line that says &quot;RESULTS TABLE&quot;,
-              and read everything below it."
+              and try to read everything below it."
             persistent-hint
           />
         </v-col>
