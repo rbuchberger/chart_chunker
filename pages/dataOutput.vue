@@ -17,7 +17,7 @@
 
         <v-col class="text-center">
           <v-btn
-            class="mono body-2 nocap mb-5"
+            class="mono body-2 nocap mb-5 text-truncate"
             elevation="12"
             outlined
             nuxt
