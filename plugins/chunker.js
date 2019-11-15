@@ -37,6 +37,14 @@ export default class Chunker {
     }
   }
 
+  get chargeEffArray() {
+    return this.cycles.map((cycle) => cycle.chargeEfficiency)
+  }
+
+  get retentionArray() {
+    return this.cycles.map((cycle) => this.getRetention(cycle))
+  }
+
   get splitBasis() {
     return this.context.state.splitBasis // Which value to use for splits
   }
