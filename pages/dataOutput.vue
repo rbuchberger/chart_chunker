@@ -17,7 +17,7 @@
 
         <v-col class="text-center">
           <v-btn
-            class="mono body-2 nocap"
+            class="mono body-2 nocap mb-5"
             elevation="12"
             outlined
             nuxt
@@ -30,28 +30,36 @@
 
         <v-col cols="2" />
       </v-row>
-    </v-container>
 
-    <v-tabs
-      v-model="tabs"
-      center-active
-      grow
-      color="orange"
-    >
-      <v-tab>Analysis</v-tab>
-      <v-tab>Cycle Details</v-tab>
-    </v-tabs>
-    <v-tabs-items
-      v-model="tabs"
-      mandatory
-    >
-      <v-tab-item>
-        <AllCycles />
-      </v-tab-item>
-      <v-tab-item>
-        <CycleDetails />
-      </v-tab-item>
-    </v-tabs-items>
+      <v-row justify="center">
+        <v-tabs
+          v-model="tabs"
+          centered
+          color="orange"
+          icons-and-text="icons"
+        >
+          <v-tab>
+            Overview
+            <v-icon>mdi-magnify-minus</v-icon>
+          </v-tab>
+          <v-tab>
+            Details
+            <v-icon>mdi-magnify-plus</v-icon>
+          </v-tab>
+        </v-tabs>
+      </v-row>
+      <v-tabs-items
+        v-model="tabs"
+        mandatory
+      >
+        <v-tab-item>
+          <AllCycles />
+        </v-tab-item>
+        <v-tab-item>
+          <CycleDetails />
+        </v-tab-item>
+      </v-tabs-items>
+    </v-container>
   </v-card>
 </template>
 
