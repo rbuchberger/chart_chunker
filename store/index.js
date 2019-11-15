@@ -63,6 +63,7 @@ export const mutations = {
   setParser(state, parser) {
     state.parser = parser
     state.columns = parser.columns
+    state.columnItems = parser.columnItems
   },
 
   addCycle(state, cycle) {
@@ -71,6 +72,11 @@ export const mutations = {
 
   clearCycles(state) {
     state.cycles = []
+  },
+
+  modColumn(state, payload) {
+    console.log(payload)
+    // state.columnItems[payload.value] = payload
   }
 }
 
@@ -120,14 +126,6 @@ export const getters = {
     }
   },
 
-  columnItems: (state) => {
-    if (state.parser) {
-      return state.parser.columnItems
-    } else {
-      return []
-    }
-  },
-
   keptColumnItems: (state) => {
     return state.parser.columnItems.filter((item) =>
       state.keptColumns.includes(item.value)
@@ -142,12 +140,12 @@ export const getters = {
     }
   },
 
-  spcColumn: (state, getters) => {
-    return getters.columnItems.find((item) => item.value === state.spcColumn)
+  spcColumn: (state) => {
+    return state.columnItems.find((item) => item.value === state.spcColumn)
   },
 
-  voltageColumn: (state, getters) => {
-    return getters.columnItems.find(
+  voltageColumn: (state) => {
+    return state.columnItems.find(
       (item) => item.value === state.voltageColumn
     )
   }
